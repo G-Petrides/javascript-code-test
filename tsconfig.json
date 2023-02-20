@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "es2021",
+    "types": ["node", "jest"],
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "./dist/",
+    "strict": true,
+    "moduleResolution": "node",
+  },
+  "exclude": [
+      "node_modules",
+      ".idea",
+      "__tests__"
+  ]
+}
