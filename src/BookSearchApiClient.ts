@@ -1,4 +1,4 @@
-type Book = {
+export type Book = {
     title?: string,
     author?: string,
     isbn?: string,
@@ -7,12 +7,12 @@ type Book = {
     test?:number
 }
 
-type BookSearchResult = {
+export type BookSearchResult = {
     result: Book[],
     error?: Error | TypeError
 }
 
-class BookSearchApiClient {
+export default class BookSearchApiClient {
     url: URL | undefined;
 
     private readonly DEFAULT_URL = "http://api.book-seller-example.com";
@@ -123,5 +123,3 @@ async function mapXmlToBooks(text: string):Promise<Book[]> {
 function errorHandler(error: Error) {
     console.error(error)
 }
-
-export default BookSearchApiClient;
