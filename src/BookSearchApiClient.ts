@@ -1,9 +1,3 @@
-const DEFAULT_LIMIT = 10;
-const DEFAULT_FORMAT = "json";
-const DEFAULT_URL = "http://api.book-seller-example.com";
-const AUTHOR_SEARCH_PATH = "/by-author";
-const PUBLISHER_SEARCH_PATH = "/by-publisher";
-
 type Book = {
     title?: string,
     author?: string,
@@ -21,8 +15,12 @@ type BookSearchResult = {
 class BookSearchApiClient {
     url: URL | undefined;
 
+    private readonly DEFAULT_URL = "http://api.book-seller-example.com";
+    private readonly AUTHOR_SEARCH_PATH = "/by-author";
+    private readonly PUBLISHER_SEARCH_PATH = "/by-publisher";
+
     getBooksByAuthor(authorName: string) {
-        this.url = new URL(DEFAULT_URL + AUTHOR_SEARCH_PATH);
+        this.url = new URL(this.DEFAULT_URL + this.AUTHOR_SEARCH_PATH);
         this.url.searchParams.append("q", authorName);
 
         //extends getBooksByAuthor with functions to set query params and execute the search
@@ -30,22 +28,24 @@ class BookSearchApiClient {
     }
 
     getBooksByPublisher(publisherName: string) {
-        this.url = new URL(DEFAULT_URL + PUBLISHER_SEARCH_PATH);
+        this.url = new URL(this.DEFAULT_URL + this.PUBLISHER_SEARCH_PATH);
         this.url.searchParams.append("q", publisherName);
         return new QueryParams(this.url)
     }
 }
 
 class QueryParams {
+    private readonly DEFAULT_LIMIT = 10;
+    private readonly DEFAULT_FORMAT = "json";
     private readonly url: URL;
-    private reqFormat: "json" | "xml" = DEFAULT_FORMAT;
+    private reqFormat: "json" | "xml" = this.DEFAULT_FORMAT;
 
     constructor(url: URL) {
         this.url = url;
         //default format
-        this.url.searchParams.append("format", DEFAULT_FORMAT);
+        this.url.searchParams.append("format", this.DEFAULT_FORMAT);
         //default limit
-        this.url.searchParams.append("limit", DEFAULT_LIMIT.toString());
+        this.url.searchParams.append("limit", this.DEFAULT_LIMIT.toString());
     }
 
     format(format: "json" | "xml") {
