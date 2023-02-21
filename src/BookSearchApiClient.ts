@@ -36,15 +36,15 @@ export default class BookSearchApiClient {
         this.options = {...this.options, ...options}
     }
 
-    async getBooksByAuthor(authorName: string) {
+    async getBooksByAuthor(author: string) {
         this.url = new URL(this.options.root_url + this.AUTHOR_SEARCH_PATH);
-        this.appendQueries(this.url, authorName, this.options)
+        this.appendQueries(this.url, author, this.options)
         return await fetchBookSearch(this.url, this.options.format)
     }
 
-    async getBooksByPublisher(publisherName: string) {
+    async getBooksByPublisher(publisher: string) {
         this.url = new URL(this.options.root_url + this.PUBLISHER_SEARCH_PATH);
-        this.appendQueries(this.url, publisherName, this.options)
+        this.appendQueries(this.url, publisher, this.options)
         return await fetchBookSearch(this.url, this.options.format)
     }
 

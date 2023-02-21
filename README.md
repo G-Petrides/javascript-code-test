@@ -1,3 +1,23 @@
+# Book Search API Client
+
+This is a simple class that makes a call to a http API to retrieve a list of books and return them.
+
+The `BookSearchApiClient` class takes an options object with the following properties:
+
+    limit: number - the number of books to return
+    format: string - the format of the API response (xml or json)
+    root_url: string - the root url of the API if an override is required
+
+After the class is instantiated, you can call the following methods:
+
+    getBooksByAuthor(author: string): Promise<BookSearchResult> - returns a promise that resolves to a BookSearchResult truple
+    getBooksByPublisher(publisher: string): Promise<BookSearchResult> - returns a promise that resolves to a BookSearchResult truple
+
+The `BookSearchResult` truple contains the following properties:
+
+    result: Book[] - an array of Book objects, or an empty array
+    error: Error | TypeError - an error object if an error occurred, or undefined
+
 # Javascript Code Test
 
 `BookSearchApiClient` is a simple class that makes a call to a http API to retrieve a list of books and return them.
