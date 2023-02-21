@@ -1,15 +1,14 @@
 export type Book = {
-    title?: string,
-    author?: string,
-    isbn?: string,
-    quantity?: number,
-    price?: number
-    test?:number
+    title: string | undefined
+    author: string | undefined
+    isbn: string | undefined
+    quantity: number | undefined
+    price: number | undefined
 }
 
 export type BookSearchResult = {
-    result: Book[],
-    error?: Error | TypeError
+    result: Book[]
+    error: Error | TypeError | undefined
 }
 
 export default class BookSearchApiClient {
