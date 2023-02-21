@@ -1,21 +1,15 @@
 
 import BookSearchApiClient from "../src/BookSearchApiClient";
-import {JSDOM} from "jsdom";
 
-const window = new JSDOM(``).window;
+global.window.fetch = jest.fn(() => Promise.resolve({
+        json: () => Promise.resolve([{book: {title: "mock title", author: "mock author", isbn: "mock isbn"}, stock: {quantity: 2, price: 2}}]),
+        text: () => Promise.resolve("<root><row><book><title>mock title</title><author>mock author</author><isbn>mock isbn</isbn></book><stock><quantity>2</quantity><price>2</price></stock></row></root>")
+})) as jest.Mock;
+
 describe("BookSearchApiClient tests", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        // @ts-ignore
-        global.window = window as const
-        // @ts-ignore
-        jest.spyOn(global, 'fetch').mockImplementation(() => {
-            return Promise.resolve({
-                json: () => Promise.resolve([{book: {title: "mock title", author: "mock author", isbn: "mock isbn"}, stock: {quantity: 2, price: 2}}]),
-                text: () => Promise.resolve("<root><row><book><title>mock title</title><author>mock author</author><isbn>mock isbn</isbn></book><stock><quantity>2</quantity><price>2</price></stock></row></root>")
-            })
-        })
     });
 
     test("correctly sets author query parameter", async () => {

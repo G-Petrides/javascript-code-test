@@ -1,5 +1,8 @@
 const DEFAULT_LIMIT = 10;
 const DEFAULT_FORMAT = "json";
+const DEFAULT_URL = "http://api.book-seller-example.com";
+const AUTHOR_SEARCH_PATH = "/by-author";
+const PUBLISHER_SEARCH_PATH = "/by-publisher";
 
 type Book = {
     title?: string,
@@ -11,7 +14,7 @@ type Book = {
 }
 
 type BookSearchResult = {
-    result?: Book[],
+    result: Book[],
     error?: Error
 }
 
@@ -19,8 +22,16 @@ class BookSearchApiClient {
     url: URL | undefined;
 
     getBooksByAuthor(authorName: string) {
-        this.url = new URL("http://api.book-seller-example.com/by-author");
+        this.url = new URL(DEFAULT_URL + AUTHOR_SEARCH_PATH);
         this.url.searchParams.append("q", authorName);
+
+        //extends getBooksByAuthor with functions to set query params and execute the search
+        return new QueryParams(this.url)
+    }
+
+    getBooksByPublisher(publisherName: string) {
+        this.url = new URL(DEFAULT_URL + PUBLISHER_SEARCH_PATH);
+        this.url.searchParams.append("q", publisherName);
         return new QueryParams(this.url)
     }
 }
@@ -54,14 +65,14 @@ class QueryParams {
 }
 
 async function fetchBookSearch(url: URL, format: "json" | "xml") {
-    let data:BookSearchResult = {result:undefined, error:undefined};
+    let data:BookSearchResult = {result:[], error:undefined};
     try {
         let response = await fetch(url.toString())
         switch (format) {
             case "json":
-                data.result = await mapJsonToBooks(await response.json()); break;
+                data.result = await mapJsonToBooks( await response.json() ); break;
             case "xml":
-                data.result = await mapXmlToBooks(await response.text()); break;
+                data.result = await mapXmlToBooks( await response.text() ); break;
         }
     } catch (e) {
         console.error('Fetch error',e)
@@ -87,11 +98,11 @@ async function mapXmlToBooks(text: string):Promise<Book[]> {
     let xml = new window.DOMParser().parseFromString(text, "text/xml").documentElement.childNodes
     xml.forEach(function (item: any) {
         books.push( {
-            title: item.getElementsByTagName("title")[0]?.childNodes[0]?.nodeValue,
-            author: item.getElementsByTagName("author")[0]?.childNodes[0]?.nodeValue,
-            isbn: item.getElementsByTagName("isbn")[0]?.childNodes[0]?.nodeValue,
-            quantity: Number(item.getElementsByTagName("quantity")[0]?.childNodes[0]?.nodeValue),
-            price: Number(item.getElementsByTagName("price")[0]?.childNodes[0]?.nodeValue)
+            title: item.getElementsByTagName("title")[0].childNodes[0]?.textContent,
+            author: item.getElementsByTagName("author")[0]?.childNodes[0]?.textContent,
+            isbn: item.getElementsByTagName("isbn")[0]?.childNodes[0]?.textContent,
+            quantity: Number(item.getElementsByTagName("quantity")[0]?.childNodes[0]?.textContent),
+            price: Number(item.getElementsByTagName("price")[0]?.childNodes[0]?.textContent)
         })
     })
     return books
