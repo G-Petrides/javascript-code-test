@@ -67,7 +67,7 @@ class QueryParams {
 async function fetchBookSearch(url: URL, format: "json" | "xml") {
     let data:BookSearchResult = {result:[], error:undefined};
     try {
-        let response = await fetch(url.toString())
+        let response = await window.fetch(url.toString())
 
         if (!response.ok || response.status !== 200) {
             throw new Error(`code:${response.status}, ${response.statusText}`)

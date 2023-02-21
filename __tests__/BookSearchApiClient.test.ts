@@ -56,9 +56,9 @@ describe("BookSearchApiClient sad tests", () => {
     });
 
     test("book search correctly returns error when fetch rejects", async () => {
-        global.window.fetch = jest.fn(() => Promise.reject("error")) as jest.Mock;
+        global.window.fetch = jest.fn(() => Promise.reject("Fetch rejected")) as jest.Mock;
         let search = await new BookSearchApiClient().getBooksByAuthor("Shakespear").format("xml").limit(10).go()
-        expect(search.error).toEqual("error")
+        expect(search.error).toEqual("Fetch rejected")
         expect(search.result).toEqual([])
     })
 
