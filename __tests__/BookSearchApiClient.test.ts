@@ -17,28 +17,28 @@ describe("BookSearchApiClient happy tests", () => {
     });
 
     test("correctly sets author query parameter", async () => {
-        await new BookSearchApiClient().getBooksByAuthor("Dave").go()
+        await new BookSearchApiClient().getBooksByAuthor("Dave")
         expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=json&limit=10");
     })
 
     test("correctly sets limit query parameter", async () => {
-        await new BookSearchApiClient().getBooksByAuthor("Dave").limit(53).go()
+        await new BookSearchApiClient({limit:53}).getBooksByAuthor("Dave")
         expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=json&limit=53");
     })
 
     test("correctly sets format query parameter", async () => {
-        await new BookSearchApiClient().getBooksByAuthor("Dave").format("xml").go()
+        await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Dave")
         expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=xml&limit=10");
     })
 
     test("book search correctly defaults to json and returns data", async () => {
-        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare").limit(10).go()
+        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare")
         expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespeare&format=json&limit=10");
         expect(search.result).toEqual([{title: "mock title", author: "mock author", isbn: "mock isbn", quantity: 2, price: 2}])
     })
     test("book search correctly returns xml data", async () => {
-        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespear").format("xml").limit(10).go()
-        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespear&format=xml&limit=10");
+        let search = await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Shakespeare")
+        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespeare&format=xml&limit=10");
         expect(search.result).toEqual([{title: "mock title", author: "mock author", isbn: "mock isbn", quantity: 2, price: 2}])
     })
 })
@@ -57,7 +57,7 @@ describe("BookSearchApiClient sad tests", () => {
 
     test("book search correctly returns error when fetch rejects", async () => {
         global.window.fetch = jest.fn(() => Promise.reject("Fetch rejected")) as jest.Mock;
-        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespear").format("xml").limit(10).go()
+        let search = await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Shakespeare")
         expect(search.error).toEqual("Fetch rejected")
         expect(search.result).toEqual([])
     })
@@ -67,20 +67,20 @@ describe("BookSearchApiClient sad tests", () => {
             status: 404,
             statusText: "This is a 404 error"
         })) as jest.Mock;
-        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare").format("xml").go()
+        let search = await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Shakespeare")
         console.log(search.error)
         expect(search.error?.toString()).toEqual("Error: code:404, This is a 404 error")
         expect(search.result).toEqual([])
     })
 
     test("book search correctly returns error when json is not valid", async () => {
-        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare").format("json").go()
+        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare")
         expect(search.error?.toString()).toEqual("TypeError: json.map is not a function")
         expect(search.result).toEqual([])
     })
 
     test("book search correctly returns error when xml is not valid", async () => {
-        let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare").format("xml").go()
+        let search = await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Shakespeare")
         expect(search.error?.toString()).toContain("Error: XML parse error:")
         expect(search.result).toEqual([])
     })

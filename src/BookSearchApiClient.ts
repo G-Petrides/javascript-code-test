@@ -11,55 +11,46 @@ export type BookSearchResult = {
     error: Error | TypeError | undefined
 }
 
-export default class BookSearchApiClient {
-    url: URL | undefined;
-
-    private readonly DEFAULT_URL = "http://api.book-seller-example.com";
-    private readonly AUTHOR_SEARCH_PATH = "/by-author";
-    private readonly PUBLISHER_SEARCH_PATH = "/by-publisher";
-
-    getBooksByAuthor(authorName: string) {
-        this.url = new URL(this.DEFAULT_URL + this.AUTHOR_SEARCH_PATH);
-        this.url.searchParams.append("q", authorName);
-
-        //extends getBooksByAuthor with functions to set query params and execute the search
-        return new QueryParams(this.url)
-    }
-
-    getBooksByPublisher(publisherName: string) {
-        this.url = new URL(this.DEFAULT_URL + this.PUBLISHER_SEARCH_PATH);
-        this.url.searchParams.append("q", publisherName);
-        return new QueryParams(this.url)
-    }
+export type BookSearchOptions = {
+    //Optional root url for the book search api, defaults to http://api.book-seller-example.com
+    root_url: string
+    //Optional format for the book search api, defaults to json
+    format: "json" | "xml"
+    //Optional limit for the book search api, omitted by default
+    limit?: number
 }
 
-class QueryParams {
-    private readonly DEFAULT_LIMIT = 10;
-    private readonly DEFAULT_FORMAT = "json";
-    private readonly url: URL;
-    private reqFormat: "json" | "xml" = this.DEFAULT_FORMAT;
-
-    constructor(url: URL) {
-        this.url = url;
-        //default format
-        this.url.searchParams.append("format", this.DEFAULT_FORMAT);
-        //default limit
-        this.url.searchParams.append("limit", this.DEFAULT_LIMIT.toString());
+/**
+ * @param options - BookSearchOptions object with root_url, format, and limit
+ * @returns client class with methods to search for books by author or publisher
+ */
+export default class BookSearchApiClient {
+    url: URL | undefined;
+    options:BookSearchOptions = {
+        root_url: "http://api.book-seller-example.com",
+        format: "json"
+    }
+    AUTHOR_SEARCH_PATH = "/by-author";
+    PUBLISHER_SEARCH_PATH = "/by-publisher";
+    constructor(options?: Partial<BookSearchOptions>) {
+        this.options = {...this.options, ...options}
     }
 
-    format(format: "json" | "xml") {
-        this.url.searchParams.set("format", format);
-        this.reqFormat = format;
-        return this
+    async getBooksByAuthor(authorName: string) {
+        this.url = new URL(this.options.root_url + this.AUTHOR_SEARCH_PATH);
+        this.appendQueries(this.url, authorName, this.options)
+        return await fetchBookSearch(this.url, this.options.format)
     }
 
-    limit(limit: number) {
-        this.url.searchParams.set("limit", limit.toString());
-        return this
+    async getBooksByPublisher(publisherName: string) {
+        this.url = new URL(this.options.root_url + this.PUBLISHER_SEARCH_PATH);
+        this.appendQueries(this.url, publisherName, this.options)
+        return await fetchBookSearch(this.url, this.options.format)
     }
 
-    async go() {
-        return await fetchBookSearch(this.url, this.reqFormat)
+    private appendQueries(url:URL, queryValue: string, options: BookSearchOptions) {
+        url.searchParams.append("q", queryValue);
+        if(options.limit) url.searchParams.append("limit", options.limit.toString());
     }
 }
 

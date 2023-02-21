@@ -1,11 +1,9 @@
-import BookSearchApiClient from "./BookSearchApiClient.js";
+import BookSearchApiClient, {BookSearchOptions} from "./BookSearchApiClient.js";
 async function getExample(){
 
-    const {error, result} = await new BookSearchApiClient()
-        .getBooksByAuthor("Shakespeare")
-        .format("xml")
-        .limit(10)
-        .go();
+    const options:Partial<BookSearchOptions> = {limit:20, format:"xml"}
+    const queryClient = new BookSearchApiClient(options)
+    const {error, result} = await queryClient.getBooksByAuthor("Shakespeare")
 
     if(error){  console.log(error); return; }
     console.log(result)
