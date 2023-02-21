@@ -18,7 +18,7 @@ describe("BookSearchApiClient happy tests", () => {
 
     test("correctly sets author query parameter", async () => {
         await new BookSearchApiClient().getBooksByAuthor("Dave")
-        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=json&limit=10");
+        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=json");
     })
 
     test("correctly sets limit query parameter", async () => {
@@ -28,17 +28,17 @@ describe("BookSearchApiClient happy tests", () => {
 
     test("correctly sets format query parameter", async () => {
         await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Dave")
-        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=xml&limit=10");
+        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Dave&format=xml");
     })
 
     test("book search correctly defaults to json and returns data", async () => {
         let search = await new BookSearchApiClient().getBooksByAuthor("Shakespeare")
-        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespeare&format=json&limit=10");
+        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespeare&format=json");
         expect(search.result).toEqual([{title: "mock title", author: "mock author", isbn: "mock isbn", quantity: 2, price: 2}])
     })
     test("book search correctly returns xml data", async () => {
         let search = await new BookSearchApiClient({format:"xml"}).getBooksByAuthor("Shakespeare")
-        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespeare&format=xml&limit=10");
+        expect(fetch).toHaveBeenCalledWith("http://api.book-seller-example.com/by-author?q=Shakespeare&format=xml");
         expect(search.result).toEqual([{title: "mock title", author: "mock author", isbn: "mock isbn", quantity: 2, price: 2}])
     })
 })

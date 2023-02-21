@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "jest && tsc",
     "test": "jest",
     "coverage": "jest --coverage"
   },

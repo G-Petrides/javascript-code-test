@@ -18,6 +18,8 @@ The `BookSearchResult` truple contains the following properties:
     result: Book[] - an array of Book objects, or an empty array
     error: Error | TypeError - an error object if an error occurred, or undefined
 
+Build with `npm run build`
+
 # Javascript Code Test
 
 `BookSearchApiClient` is a simple class that makes a call to a http API to retrieve a list of books and return them.
