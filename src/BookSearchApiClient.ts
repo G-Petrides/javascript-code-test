@@ -26,12 +26,13 @@ export type BookSearchOptions = {
  */
 export default class BookSearchApiClient {
     url: URL | undefined;
+    AUTHOR_SEARCH_PATH = "/by-author";
+    PUBLISHER_SEARCH_PATH = "/by-publisher";
     options:BookSearchOptions = {
         root_url: "http://api.book-seller-example.com",
         format: "json"
     }
-    AUTHOR_SEARCH_PATH = "/by-author";
-    PUBLISHER_SEARCH_PATH = "/by-publisher";
+
     constructor(options?: Partial<BookSearchOptions>) {
         this.options = {...this.options, ...options}
     }
@@ -50,6 +51,7 @@ export default class BookSearchApiClient {
 
     private appendQueries(url:URL, queryValue: string, options: BookSearchOptions) {
         url.searchParams.append("q", queryValue);
+        url.searchParams.append("format", options.format);
         if(options.limit) url.searchParams.append("limit", options.limit.toString());
     }
 }
