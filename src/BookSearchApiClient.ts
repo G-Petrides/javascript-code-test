@@ -15,7 +15,7 @@ type Book = {
 
 type BookSearchResult = {
     result: Book[],
-    error?: Error
+    error?: Error | TypeError
 }
 
 class BookSearchApiClient {
@@ -68,15 +68,21 @@ async function fetchBookSearch(url: URL, format: "json" | "xml") {
     let data:BookSearchResult = {result:[], error:undefined};
     try {
         let response = await fetch(url.toString())
+
+        if (!response.ok || response.status !== 200) {
+            throw new Error(`code:${response.status}, ${response.statusText}`)
+        }
+
         switch (format) {
             case "json":
                 data.result = await mapJsonToBooks( await response.json() ); break;
             case "xml":
                 data.result = await mapXmlToBooks( await response.text() ); break;
         }
-    } catch (e) {
-        console.error('Fetch error',e)
-        data.error = new Error(e as string)
+
+    } catch (e){
+        data.error = e as TypeError
+        errorHandler(e as TypeError)
     }
     return data
 }
@@ -94,9 +100,15 @@ async function mapJsonToBooks(json: any):Promise<Book[]> {
 }
 
 async function mapXmlToBooks(text: string):Promise<Book[]> {
-    let books:Book[] = []
-    let xml = new window.DOMParser().parseFromString(text, "text/xml").documentElement.childNodes
-    xml.forEach(function (item: any) {
+    const books:Book[] = []
+    const xml = new window.DOMParser().parseFromString(text, "text/xml")
+    const errorNode = xml.querySelector("parsererror")
+
+    if(errorNode) {
+        throw new Error("XML parse error: " + errorNode.textContent)
+    }
+
+    xml.documentElement.childNodes.forEach(function (item: any) {
         books.push( {
             title: item.getElementsByTagName("title")[0].childNodes[0]?.textContent,
             author: item.getElementsByTagName("author")[0]?.childNodes[0]?.textContent,
@@ -106,6 +118,10 @@ async function mapXmlToBooks(text: string):Promise<Book[]> {
         })
     })
     return books
+}
+
+function errorHandler(error: Error) {
+    console.error(error)
 }
 
 export default BookSearchApiClient;
